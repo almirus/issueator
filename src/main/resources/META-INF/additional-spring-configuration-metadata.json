@@ -1,0 +1,33 @@
+{
+  "properties": [
+    {
+      "name": "jira.user",
+      "type": "java.lang.String",
+      "description": "Jira user name for authorization."
+    },
+    {
+      "name": "jira.password",
+      "type": "java.lang.String",
+      "description": "Jira user password for authorization."
+    },
+    {
+      "name": "jira.server",
+      "type": "java.lang.String",
+      "description": "Jira server."
+    },
+    {
+      "name": "jira.issue.issuetype.id",
+      "type": "java.lang.String",
+      "description": "Bug id from Jira."
+    },
+    {
+      "name": "jira.issue.project.key",
+      "type": "java.lang.String",
+      "description": "Jira project name for bugs."
+    },
+    {
+      "name": "jira.issue.priority.id",
+      "type": "java.lang.String",
+      "description": "Jira bug priority id."
+    }
+  ] }
