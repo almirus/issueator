@@ -8,4 +8,5 @@ public class Attachment {
     String filename;
     Long size;
     String content;
+    String self;
 }

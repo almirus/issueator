@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
@@ -15,7 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.*;
@@ -39,7 +44,7 @@ public class JiraController {
     }
 
     @PostMapping(value = "issue/{issueIdOrKey}/attachments", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
-    public Map uploadAttachment(@PathVariable String issueIdOrKey, @RequestParam("attachment") MultipartFile file) throws IOException {
+    public ResponseEntity<String> uploadAttachment(@PathVariable String issueIdOrKey, @RequestParam("attachment") MultipartFile file) throws IOException {
         log.info("M=uploadAttachment, issueIdOrKey={}",
                 issueIdOrKey);
         IssueResponse issueResponse = jiraClient.getIssue(issueIdOrKey, "summary");
@@ -56,11 +61,13 @@ public class JiraController {
         List<Attachment> attachment = jiraClient.uploadAttachment("no-check", issueIdOrKey, multiValueMap);
         log.info("M=uploadedFile, id={}, filename={}",
                 attachment.get(0).getId(), attachment.get(0).getFilename());
-        return Collections.singletonMap("id", attachment.get(0).getId());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(attachment.get(0).getSelf());
     }
 
     @PostMapping(value = "issue", consumes = APPLICATION_FORM_URLENCODED_VALUE, produces = APPLICATION_JSON_VALUE)
-    public HttpEntity<IssueResponse> createIssue(@Validated ClientIssue clientIssue) {
+    public ResponseEntity<String> createIssue(@Validated ClientIssue clientIssue) {
         log.info("M=createIssue, project={}, issueType={}, priority={}",
                 env.getProperty("jira.issue.project.key"), env.getProperty("jira.issue.issuetype.id"), env.getProperty("jira.issue.priority.id"));
         IssueRequest issueRequest = IssueRequest.builder().fields(
@@ -93,7 +100,9 @@ public class JiraController {
             List<Attachment> attachment = jiraClient.uploadAttachment("no-check", issueResponse.getId(), multiValueMap);
             log.info("attachResponse={}", attachment);
         }
-        return new HttpEntity<>(issueResponse);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(issueResponse.getSelf());
     }
 
 }
