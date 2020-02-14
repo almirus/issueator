@@ -10,6 +10,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,11 +25,12 @@ import static org.springframework.http.MediaType.*;
 @RequestMapping("/jira")
 public class JiraController {
     private final JiraClient jiraClient;
-    @Autowired
-    private Environment env;
+    private final Environment env;
 
-    public JiraController(JiraClient jiraClient) {
+    @Autowired
+    public JiraController(JiraClient jiraClient, Environment env) {
         this.jiraClient = jiraClient;
+        this.env = env;
     }
 
     @GetMapping("issue/{issueIdOrKey}")
@@ -57,13 +59,13 @@ public class JiraController {
         return Collections.singletonMap("id", attachment.get(0).getId());
     }
 
-    @PostMapping(value = "issue", produces = APPLICATION_JSON_VALUE)
-    public HttpEntity<IssueResponse> createIssue(@ModelAttribute ClientIssue clientIssue) {
+    @PostMapping(value = "issue", consumes = APPLICATION_FORM_URLENCODED_VALUE, produces = APPLICATION_JSON_VALUE)
+    public HttpEntity<IssueResponse> createIssue(@Validated ClientIssue clientIssue) {
         log.info("M=createIssue, project={}, issueType={}, priority={}",
                 env.getProperty("jira.issue.project.key"), env.getProperty("jira.issue.issuetype.id"), env.getProperty("jira.issue.priority.id"));
         IssueRequest issueRequest = IssueRequest.builder().fields(
                 IssueField.builder().summary(clientIssue.getTitle())
-                        .description(clientIssue.getDiscriptionl())
+                        .description(clientIssue.getDescription())
                         .project(new IssueProject(env.getProperty("jira.issue.project.key")))
                         .issuetype(new IssueType(env.getProperty("jira.issue.issuetype.id")))
                         .priority(new IssuePriority(env.getProperty("jira.issue.priority.id")))
@@ -78,7 +80,9 @@ public class JiraController {
 
         if (!clientIssue.getBase64FileBody().isEmpty()) {
             MultiValueMap<String, Object> multiValueMap = new LinkedMultiValueMap<>();
-            final byte[] decoded64 = Base64.getDecoder().decode(clientIssue.getBase64FileBody());
+            String[] part = clientIssue.getBase64FileBody().split(",");
+
+            final byte[] decoded64 = Base64.getDecoder().decode(part[1]);
             ByteArrayResource contentsAsResource = new ByteArrayResource(decoded64) {
                 @Override
                 public String getFilename() {
