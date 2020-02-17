@@ -26,6 +26,6 @@ public interface JiraClient {
                                       @RequestPart(name = "file") MultiValueMap<String, Object> file);
 
     @GetMapping("/rest/api/2/issue/{issueIdOrKey}")
-    IssueResponse getIssue(@PathVariable String issueIdOrKey, @RequestParam("fields") String fields);
+    IssueResponse getIssue(@PathVariable String issueIdOrKey, @RequestParam(value = "fields", defaultValue = "summary") String fields);
 
 }
