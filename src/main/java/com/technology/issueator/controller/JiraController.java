@@ -1,27 +1,22 @@
 package com.technology.issueator.controller;
 
 
-import com.technology.issueator.client.JiraClient;
-import com.technology.issueator.model.*;
+import com.technology.issueator.model.Attachment;
+import com.technology.issueator.model.ClientIssue;
+import com.technology.issueator.model.IssueResponse;
+import com.technology.issueator.service.IssueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.*;
 
@@ -29,36 +24,29 @@ import static org.springframework.http.MediaType.*;
 @RestController
 @RequestMapping("/jira")
 public class JiraController {
-    private final JiraClient jiraClient;
-    private final Environment env;
+
+
+    private IssueService issueService;
 
     @Autowired
-    public JiraController(JiraClient jiraClient, Environment env) {
-        this.jiraClient = jiraClient;
-        this.env = env;
+    public JiraController(IssueService issueService) {
+        this.issueService = issueService;
     }
 
     @GetMapping("issue/{issueIdOrKey}")
     public HttpEntity<IssueResponse> getIssue(@PathVariable String issueIdOrKey) {
-        return new HttpEntity<>(jiraClient.getIssue(issueIdOrKey, "summary"));
+        return new HttpEntity<>(issueService.getIssue(issueIdOrKey));
     }
 
     @PostMapping(value = "issue/{issueIdOrKey}/attachments", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> uploadAttachment(@PathVariable String issueIdOrKey, @RequestParam("attachment") MultipartFile file) throws IOException {
         log.info("M=uploadAttachment, issueIdOrKey={}",
                 issueIdOrKey);
-        IssueResponse issueResponse = jiraClient.getIssue(issueIdOrKey, "summary");
+        IssueResponse issueResponse = issueService.getIssue(issueIdOrKey);
         log.info("M=getIssue, issueIdOrKey={}",
                 issueResponse.getKey());
-        MultiValueMap<String, Object> multiValueMap = new LinkedMultiValueMap<>();
-        ByteArrayResource contentsAsResource = new ByteArrayResource(file.getBytes()) {
-            @Override
-            public String getFilename() {
-                return file.getOriginalFilename();
-            }
-        };
-        multiValueMap.add("file", contentsAsResource);
-        List<Attachment> attachment = jiraClient.uploadAttachment("no-check", issueIdOrKey, multiValueMap);
+
+        List<Attachment> attachment = issueService.uploadAttachment(issueIdOrKey, file);
         log.info("M=uploadedFile, id={}, filename={}",
                 attachment.get(0).getId(), attachment.get(0).getFilename());
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -68,36 +56,15 @@ public class JiraController {
 
     @PostMapping(value = "issue", consumes = APPLICATION_FORM_URLENCODED_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createIssue(@Validated ClientIssue clientIssue) {
-        log.info("M=createIssue, project={}, issueType={}, priority={}",
-                env.getProperty("jira.issue.project.key"), env.getProperty("jira.issue.issuetype.id"), env.getProperty("jira.issue.priority.id"));
-        IssueRequest issueRequest = IssueRequest.builder().fields(
-                IssueField.builder().summary(clientIssue.getTitle())
-                        .description(clientIssue.getDescription())
-                        .project(new IssueProject(env.getProperty("jira.issue.project.key")))
-                        .issuetype(new IssueType(env.getProperty("jira.issue.issuetype.id")))
-                        .priority(new IssuePriority(env.getProperty("jira.issue.priority.id")))
-                        .components(
-                                Arrays.stream(new String[]{})
-                                        .map(IssueComponent::new)
-                                        .collect(Collectors.toList()))
-                        .build()
-        ).build();
-        IssueResponse issueResponse = jiraClient.createIssue(issueRequest);
+        log.info("M=createIssue, clientIssue={}",
+                clientIssue);
+
+        IssueResponse issueResponse = issueService.createIssue(clientIssue);
         log.info("issueResponse={}", issueResponse);
 
         if (!clientIssue.getBase64FileBody().isEmpty()) {
-            MultiValueMap<String, Object> multiValueMap = new LinkedMultiValueMap<>();
-            String[] part = clientIssue.getBase64FileBody().split(",");
 
-            final byte[] decoded64 = Base64.getDecoder().decode(part[1]);
-            ByteArrayResource contentsAsResource = new ByteArrayResource(decoded64) {
-                @Override
-                public String getFilename() {
-                    return "screenshot.png";
-                }
-            };
-            multiValueMap.add("file", contentsAsResource);
-            List<Attachment> attachment = jiraClient.uploadAttachment("no-check", issueResponse.getId(), multiValueMap);
+            List<Attachment> attachment = issueService.uploadAttachment(issueResponse.getId(), clientIssue.getBase64FileBody());
             log.info("attachResponse={}", attachment);
         }
         return ResponseEntity.status(HttpStatus.CREATED)

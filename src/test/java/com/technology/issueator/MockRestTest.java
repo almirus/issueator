@@ -49,7 +49,7 @@ public class MockRestTest {
         mockMvc.perform(get("/jira/issue/CR-5")
                 .accept(APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("1000"))
+                .andExpect(jsonPath("$.id").value(1000))
                 .andExpect(jsonPath("$.key").value("CR-5"))
                 .andExpect(jsonPath("$.self").value("url"));
     }
