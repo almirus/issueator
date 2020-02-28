@@ -5,11 +5,11 @@ import {toFormUrlEncoder} from "./utils/postEncoder";
 import {getScreenShot} from "./utils/screenshot";
 import {getEnvironment} from "./utils/environment";
 import {prepare} from "./utils/prepare";
+import {dragElement} from "./utils/drag";
 
 prepare();
 
 document.addEventListener("DOMContentLoaded", () => {
-
     let button_div = document.createElement("span");
     button_div.setAttribute("id", DOM_ELEMENTS_PREFIX + "submit_error_button");
     button_div.innerHTML = "&#8227; Ошибка <span>Создать обращение в Jira</span>";
@@ -63,4 +63,5 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     document.body.appendChild(button_div);
     document.body.appendChild(textarea_div);
+    dragElement(button_div, textarea_div);
 });

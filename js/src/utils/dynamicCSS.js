@@ -12,8 +12,9 @@ export function addCSS() {
           min-width:235px;min-height:100px;
         }
         #${DOM_ELEMENTS_PREFIX}submit_error_button {
+          font: 15px/1.5 Helvetica, Verdana, sans-serif;
           position: fixed; top: 40px; left: 5px; z-index:100;
-          padding:3px;
+          padding:5px;
           color:white;
           background-color: #0095ff;
           border-color: #07c;
@@ -22,7 +23,7 @@ export function addCSS() {
           opacity: 0.4;
         }
         #${DOM_ELEMENTS_PREFIX}error_message {
-          position: fixed; top: 60px; left: 5px; z-index:100;
+          position: fixed; top: 80px; left: 5px; z-index:100;
           color:white;
         }
         #${DOM_ELEMENTS_PREFIX}submit_error_button span {
