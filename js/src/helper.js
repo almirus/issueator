@@ -6,11 +6,14 @@ import {getScreenShot} from "./utils/screenshot";
 import {getEnvironment} from "./utils/environment";
 import {prepare} from "./utils/prepare";
 import {dragElement} from "./utils/drag";
+import Cookies from 'js-cookie';
 
 prepare();
 
 document.addEventListener("DOMContentLoaded", () => {
     let button_div = document.createElement("span");
+    button_div.style.top = Cookies.get(DOM_ELEMENTS_PREFIX+'_x') || '40px';
+    button_div.style.left = Cookies.get(DOM_ELEMENTS_PREFIX+'_y') || '5px';
     button_div.setAttribute("id", DOM_ELEMENTS_PREFIX + "submit_error_button");
     button_div.innerHTML = "&#8227; Ошибка <span>Создать обращение в Jira</span>";
     let textarea_div = document.createElement("span");

@@ -1,3 +1,6 @@
+import {DOM_ELEMENTS_PREFIX} from "./const";
+import Cookies from 'js-cookie';
+
 export function dragElement(element, area) {
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     if (document.getElementById(element.id + "header")) {
@@ -40,5 +43,7 @@ export function dragElement(element, area) {
         // stop moving when mouse button is released:
         document.onmouseup = null;
         document.onmousemove = null;
+        Cookies.set(DOM_ELEMENTS_PREFIX + '_x', element.style.top);
+        Cookies.set(DOM_ELEMENTS_PREFIX + '_y', element.style.left);
     }
 }
