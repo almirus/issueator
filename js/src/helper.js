@@ -19,6 +19,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let textarea_div = document.createElement("span");
     textarea_div.setAttribute("id", DOM_ELEMENTS_PREFIX + "error_message");
     textarea_div.style.visibility = "hidden";
+
+    textarea_div.style.top = Cookies.get(DOM_ELEMENTS_PREFIX+'_x')  || '40px';
+    textarea_div.style.left = Cookies.get(DOM_ELEMENTS_PREFIX+'_y') || '5px';
+
     let text_area = document.createElement("textarea");
     text_area.placeholder = `Подробно опишите Вашу проблему${AUTO_SCREENSHOT_FLAG ? ', к обращению будет автоматически приложен скриншот этой страницы' : ''}`;
     text_area.setAttribute("id", DOM_ELEMENTS_PREFIX + "error_description");

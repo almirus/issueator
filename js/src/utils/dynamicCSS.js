@@ -24,6 +24,7 @@ export function addCSS() {
         }
         #${DOM_ELEMENTS_PREFIX}error_message {
           position: fixed; top: 80px; left: 5px; z-index:100;
+          padding-top : 40px;
           color:white;
         }
         #${DOM_ELEMENTS_PREFIX}submit_error_button span {

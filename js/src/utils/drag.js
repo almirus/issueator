@@ -35,8 +35,8 @@ export function dragElement(element, area) {
         element.style.top = (element.offsetTop - pos2) + "px";
         element.style.left = (element.offsetLeft - pos1) + "px";
 
-        area.style.top = (area.offsetTop - pos2) + "px";
-        area.style.left = (area.offsetLeft - pos1) + "px";
+        area.style.top = (element.offsetTop - pos2 ) + "px";
+        area.style.left = (element.offsetLeft - pos1) + "px";
     }
 
     function closeDragElement() {
