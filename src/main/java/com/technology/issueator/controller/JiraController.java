@@ -54,6 +54,7 @@ public class JiraController {
                 .body(attachment.get(0).getSelf());
     }
 
+    @CrossOrigin
     @PostMapping(value = "issue", consumes = APPLICATION_FORM_URLENCODED_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createIssue(@Validated ClientIssue clientIssue) {
         log.info("M=createIssue, clientIssue={}",
@@ -62,11 +63,9 @@ public class JiraController {
         IssueResponse issueResponse = issueService.createIssue(clientIssue);
         log.info("issueResponse={}", issueResponse);
 
-        if (!clientIssue.getBase64FileBody().isEmpty()) {
+        List<Attachment> attachments = issueService.uploadAttachment(issueResponse.getId(), clientIssue.getBase64FileBody(), clientIssue.getLog());
+        log.info("attachResponse={}", attachments);
 
-            List<Attachment> attachment = issueService.uploadAttachment(issueResponse.getId(), clientIssue.getBase64FileBody());
-            log.info("attachResponse={}", attachment);
-        }
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(issueResponse.getSelf());

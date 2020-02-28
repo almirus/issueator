@@ -23,4 +23,8 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     public void handleFeignStatusException(FeignException e, HttpServletResponse response) throws IOException {
         response.sendError(e.status(), "no data found");
     }
+    @ExceptionHandler(Base64ConvertException.class)
+    public void springHandleBase64(HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }

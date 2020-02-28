@@ -21,14 +21,13 @@ public class FeignClientConfiguration {
     public BasicAuthRequestInterceptor basicAuthRequestInterceptor() {
         return new BasicAuthRequestInterceptor(user, password);
     }
-
+    @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
             requestTemplate.header("Accept", APPLICATION_JSON_VALUE);
         };
 
     }
-
     @Bean
     Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;

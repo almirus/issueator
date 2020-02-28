@@ -1,6 +1,7 @@
 package com.technology.issueator.service;
 
 import com.technology.issueator.client.JiraClient;
+import com.technology.issueator.errorhandling.Base64ConvertException;
 import com.technology.issueator.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -45,18 +46,32 @@ public class IssueService {
         return jiraClient.uploadAttachment("no-check", issueIdOrKey, multiValueMap);
     }
 
-    public List<Attachment> uploadAttachment(String issueIdOrKey, String base64body) {
+    public List<Attachment> uploadAttachment(String issueIdOrKey, String base64body, String log) {
         MultiValueMap<String, Object> multiValueMap = new LinkedMultiValueMap<>();
-        String[] part = base64body.split(",");
-
-        final byte[] decoded64 = Base64.getDecoder().decode(part[1]);
-        ByteArrayResource contentsAsResource = new ByteArrayResource(decoded64) {
-            @Override
-            public String getFilename() {
-                return "screenshot.png";
+        if (!base64body.isEmpty()) {
+            String[] part = base64body.split(",");
+            try {
+                final byte[] decoded64 = Base64.getDecoder().decode(part[1]);
+                ByteArrayResource contentsAsResource = new ByteArrayResource(decoded64) {
+                    @Override
+                    public String getFilename() {
+                        return "screenshot.png";
+                    }
+                };
+                multiValueMap.add("file", contentsAsResource);
+            } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException iae) {
+                throw new Base64ConvertException();
             }
-        };
-        multiValueMap.add("file", contentsAsResource);
+        }
+        if (!log.isEmpty()) {
+            ByteArrayResource contentsAsResource = new ByteArrayResource(log.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return "exception.log";
+                }
+            };
+            multiValueMap.add("file", contentsAsResource);
+        }
         return jiraClient.uploadAttachment("no-check", issueIdOrKey, multiValueMap);
     }
 
