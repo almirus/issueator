@@ -8,9 +8,10 @@ import {prepare} from "./utils/prepare";
 import {dragElement} from "./utils/drag";
 import Cookies from 'js-cookie';
 
-prepare();
+
 
 document.addEventListener("DOMContentLoaded", () => {
+    prepare();
     let button_div = document.createElement("span");
     button_div.style.top = Cookies.get(DOM_ELEMENTS_PREFIX+'_x') || '40px';
     button_div.style.left = Cookies.get(DOM_ELEMENTS_PREFIX+'_y') || '5px';
