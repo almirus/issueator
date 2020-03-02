@@ -1,10 +1,15 @@
 {
-  "name": "index",
+  "scripts": {
+    "build-dev": "cross-env NODE_ENV=development webpack --config webpack.dev.js",
+    "build-prod": "cross-env NODE_ENV=production webpack --config webpack.prod.js",
+    "render-stats": "webpack-bundle-analyzer --port 4200 dist/stats.json"
+  },
+  "name": "issueator_client",
   "version": "1.0.0",
   "dependencies": {
+    "es6-promise": "^4.2.8",
     "whatwg-fetch": "^3.0.0",
     "html2canvas": "latest",
-    "core-js": "^3.6.4",
     "js-cookie": "^2.2.1"
   },
   "devDependencies": {
@@ -12,18 +17,14 @@
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-env": "^7.8.6",
-    "babel-loader": "^8.0.6",
     "@babel/runtime": "^7.8.4",
+    "babel-loader": "^8.0.6",
     "cross-env": "^6.0.3",
     "serialize-javascript": "^3.0.0",
-    "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.41.6",
+    "webpack-bundle-analyzer": "^3.6.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3",
     "webpack-merge": "^4.2.2"
-  },
-  "scripts": {
-    "build-dev": "cross-env NODE_ENV=development webpack --config webpack.dev.js",
-    "build-prod": "cross-env NODE_ENV=production webpack --config webpack.prod.js"
   }
 }

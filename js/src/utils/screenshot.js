@@ -8,7 +8,6 @@ export async function getScreenShot() {
         img = Promise.all([html2canvas(document.body).then(canvas => {
             return canvas.toDataURL("image/png");
         })]);
-
     }
     return img;
 }

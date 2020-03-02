@@ -1,7 +1,7 @@
 import {DOM_ELEMENTS_PREFIX} from "./const";
 import Cookies from 'js-cookie';
 
-export function dragElement(element, area) {
+export function dragElement(element, children) {
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     if (document.getElementById(element.id + "header")) {
         // if present, the header is where you move the DIV from:
@@ -20,7 +20,7 @@ export function dragElement(element, area) {
         document.onmouseup = closeDragElement;
         // call a function whenever the cursor moves:
         document.onmousemove = elementDrag;
-        area.style.visibility = "hidden";
+        children.style.visibility = "hidden";
     }
 
     function elementDrag(e) {
@@ -35,8 +35,8 @@ export function dragElement(element, area) {
         element.style.top = (element.offsetTop - pos2) + "px";
         element.style.left = (element.offsetLeft - pos1) + "px";
 
-        area.style.top = (element.offsetTop - pos2 ) + "px";
-        area.style.left = (element.offsetLeft - pos1) + "px";
+        children.style.top = (element.offsetTop - pos2 ) + "px";
+        children.style.left = (element.offsetLeft - pos1) + "px";
     }
 
     function closeDragElement() {
