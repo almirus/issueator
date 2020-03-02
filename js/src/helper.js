@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let widget = new ButtonWidget();
     widget.handleSend = async function () {
+        alert(10);
         let description = `
             url: ${window.location.href}
             time: ${new Date().toLocaleString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone})
