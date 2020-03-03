@@ -1,6 +1,7 @@
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
+const PropertiesReader = require('properties-reader');
+let properties = PropertiesReader('../src/main/resources/application.properties');
 module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -8,6 +9,14 @@ module.exports = {
     },
     module: {
         rules: [
+            {
+                test: /const\.js$/,
+                loader: 'string-replace-loader',
+                options: {
+                    search: 'helper',
+                    replace: properties.get('jira.issue.project.key'),
+                }
+            },
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
