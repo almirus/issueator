@@ -1,7 +1,7 @@
 @media print {
-    submit_error_button, error_message {
-                                                 display: none !important;
-                                             }
+    #submit_error_button, #error_message {
+        display: none !important;
+    }
 }
 #${DOM_ELEMENTS_PREFIX}error_description {
     min-width:235px;min-height:100px;

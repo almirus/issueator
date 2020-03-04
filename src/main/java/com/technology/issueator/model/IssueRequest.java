@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class IssueRequest {
-    private IssueField fields;
+    IssueField fields;
 }
 

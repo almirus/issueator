@@ -8,10 +8,10 @@ import java.util.List;
 @Data
 @Builder
 public class IssueField {
-    private IssueProject project;
-    private IssueType issuetype;
-    private String summary;
-    private IssuePriority priority;
-    private String description;
-    private List<IssueComponent> components;
+    IssueProject project;
+    IssueType issuetype;
+    String summary;
+    IssuePriority priority;
+    String description;
+    List<IssueComponent> components;
 }

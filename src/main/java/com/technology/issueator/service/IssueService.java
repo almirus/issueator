@@ -25,6 +25,8 @@ public class IssueService {
     private String issueType;
     @Value("${jira.issue.priority.id}")
     private String issuePriority;
+    @Value("${jira.server}")
+    private String server;
 
     public IssueService(JiraClient jiraClient) {
         this.jiraClient = jiraClient;
@@ -88,6 +90,8 @@ public class IssueService {
                                         .collect(Collectors.toList()))
                         .build()
         ).build();
-        return jiraClient.createIssue(issueRequest);
+        IssueResponse response = jiraClient.createIssue(issueRequest);
+        response.setLink("https://" + server + "/browse/" + response.getKey());
+        return response;
     }
 }

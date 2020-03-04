@@ -9,5 +9,6 @@ export async function getScreenShot() {
             return canvas.toDataURL("image/png");
         })]);
     }
+    console.log('screen ready!');
     return img;
 }

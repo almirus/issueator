@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class IssueType {
-    private String id;
+    String id;
 }

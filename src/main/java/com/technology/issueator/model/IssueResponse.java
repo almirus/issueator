@@ -1,5 +1,6 @@
 package com.technology.issueator.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +9,9 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class IssueResponse {
-    private String id;
-    private String key;
-    private String self;
+    String id;
+    String key;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    String self;
+    String link;
 }

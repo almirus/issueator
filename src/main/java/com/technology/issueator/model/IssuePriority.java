@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class IssuePriority{
-    private String id;
+    String id;
 }

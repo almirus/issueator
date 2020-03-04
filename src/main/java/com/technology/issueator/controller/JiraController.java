@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +24,6 @@ import static org.springframework.http.MediaType.*;
 @RequestMapping("/jira")
 public class JiraController {
 
-
     private IssueService issueService;
 
     @Autowired
@@ -39,7 +37,7 @@ public class JiraController {
     }
 
     @PostMapping(value = "issue/{issueIdOrKey}/attachments", consumes = MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> uploadAttachment(@PathVariable String issueIdOrKey, @RequestParam("attachment") MultipartFile file) throws IOException {
+    public ResponseEntity<List<Attachment>> uploadAttachment(@PathVariable String issueIdOrKey, @RequestParam("attachment") MultipartFile file) throws IOException {
         log.info("M=uploadAttachment, issueIdOrKey={}",
                 issueIdOrKey);
         IssueResponse issueResponse = issueService.getIssue(issueIdOrKey);
@@ -49,14 +47,12 @@ public class JiraController {
         List<Attachment> attachment = issueService.uploadAttachment(issueIdOrKey, file);
         log.info("M=uploadedFile, id={}, filename={}",
                 attachment.get(0).getId(), attachment.get(0).getFilename());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(attachment.get(0).getSelf());
+        return new ResponseEntity<>(attachment, HttpStatus.CREATED);
     }
 
     @CrossOrigin
     @PostMapping(value = "issue", consumes = APPLICATION_FORM_URLENCODED_VALUE, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createIssue(@Validated ClientIssue clientIssue) {
+    public ResponseEntity<IssueResponse> createIssue(@Validated ClientIssue clientIssue) {
         log.info("M=createIssue, clientIssue={}",
                 clientIssue);
 
@@ -66,9 +62,7 @@ public class JiraController {
         List<Attachment> attachments = issueService.uploadAttachment(issueResponse.getId(), clientIssue.getBase64FileBody(), clientIssue.getLog());
         log.info("attachResponse={}", attachments);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(issueResponse.getSelf());
+        return new ResponseEntity<>(issueResponse, HttpStatus.CREATED);
     }
 
 }

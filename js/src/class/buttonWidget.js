@@ -6,6 +6,7 @@ import {addCSS} from "../utils/dynamicCSS";
 
 export class ButtonWidget {
     constructor(x = '40px', y = '5px') {
+        console.log('call constructor');
         addCSS();
         let button_div = document.createElement("span");
         button_div.style.top = Cookies.get(DOM_ELEMENTS_PREFIX + '_x') || x;
@@ -32,6 +33,9 @@ export class ButtonWidget {
         textarea_div.appendChild(document.createElement("br"));
         textarea_div.appendChild(submit_button);
         textarea_div.appendChild(cancel_button);
+        let result_area = document.createElement("div");
+        result_area.setAttribute("id", DOM_ELEMENTS_PREFIX + "result");
+        result_area.style.visibility = "hidden";
 
         cancel_button.onclick = () => {
             textarea_div.style.visibility = "hidden";
@@ -40,19 +44,44 @@ export class ButtonWidget {
         button_div.onclick = () => {
             textarea_div.style.visibility = "visible";
         };
-        submit_button.onclick = async () => {
+        submit_button.onclick = () => {
             button_div.style.visibility = "hidden";
             textarea_div.style.visibility = "hidden";
             // отправляем собранную информацию
-           this.handleSend();
+            this.handleSend().then(result => {
+                result_area.style.visibility = "visible";
+                if (result && result.link) {
+                    result_area.appendChild(document.createTextNode("Вы можете отредактировать созданное обращение "));
+                    let a = document.createElement('a');
+                    a.href = result.link;
+                    a.target = "_blank";
+                    a.title = "перейти в обращение";
+                    a.appendChild(document.createTextNode("по ссылке"));
+                    result_area.appendChild(a);
+                }else{
+                    result_area.appendChild(document.createTextNode("Произошла ошибка при создании обращения, подробности в логе"));
+                }
+                let close = document.createElement('span');
+                close.title ="Закрыть";
+                close.className='close';
+                close.onclick = () => {
+                    result_area.style.visibility = "hidden";
+                };
+                result_area.setAttribute("id", DOM_ELEMENTS_PREFIX + "result");
+                result_area.appendChild(close);
+                console.log(result);
+            });
         };
-        document.body.appendChild(button_div);
-        document.body.appendChild(textarea_div);
+        this._result = result_area;
         this._button = button_div;
         this._children = textarea_div;
     }
 
-    drag() {
+    render() {
+        document.body.appendChild(this._button);
+        document.body.appendChild(this._children);
+        document.body.appendChild(this._result);
         dragElement(this._button, this._children);
+        console.log('call render');
     }
 }

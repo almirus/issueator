@@ -8,6 +8,51 @@ export function addCSS() {
                 display: none !important;
             }
         }
+        #${DOM_ELEMENTS_PREFIX}result {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          margin-top: -25px;
+          margin-left: -150px;
+          width: 300px;
+          height: 50px;
+          padding: 10px;
+          color: white;
+          font: 15px/1.5 Helvetica, Verdana, sans-serif;
+          background-color: #1ebee6;
+          border-radius: 10px 10px 10px 10px;
+          -moz-border-radius: 10px 10px 10px 10px;
+          -webkit-border-radius: 10px 10px 10px 10px;
+          border: 1px solid #000000;
+        }
+        #${DOM_ELEMENTS_PREFIX}result .close {
+            position: relative;
+            border-radius: 50%;
+            background-color: #f40024;
+            padding: 0 8px;
+            cursor: pointer;
+            color: white;
+            height: 16px;
+            float: right;
+        }
+        #${DOM_ELEMENTS_PREFIX}result .close:before, .close:after {
+            position: absolute;
+            content: ' ';
+            height: 10px;
+            margin-top: 3px;
+            margin-left: -1px;
+            width: 2px;
+            background-color: white;
+        }
+        #${DOM_ELEMENTS_PREFIX}result .close:before {
+            transform: rotate(45deg);
+        }
+        #${DOM_ELEMENTS_PREFIX}result .close:after {
+            transform: rotate(-45deg);
+        }
+        #${DOM_ELEMENTS_PREFIX}result .close:hover {
+            opacity: 1;
+        }
         #${DOM_ELEMENTS_PREFIX}error_description {
           min-width:235px;min-height:100px;
         }

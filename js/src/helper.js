@@ -10,28 +10,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let widget = new ButtonWidget();
     widget.handleSend = async function () {
-        alert(10);
+        console.log('handleSend');
         let description = `
             url: ${window.location.href}
             time: ${new Date().toLocaleString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone})
             ${document.getElementById(DOM_ELEMENTS_PREFIX + "error_description").value}`;
-        fetch(SERVER_API_URL, {
-            method: 'POST',
-            mode: 'cors',
-            body: toFormUrlEncoder({
-                title: 'Пользовательская ошибка из Скоринг',
-                description: description,
-                base64FileBody: await getScreenShot(),
-                log: getEnvironment(),
-            }),
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded',
-            }
-        }).then(response => response.json())
-            .then(res => {
-
+        let screenShot = await getScreenShot();
+        try {
+            const resp = await fetch(SERVER_API_URL, {
+                method: 'POST',
+                mode: 'cors',
+                body: toFormUrlEncoder({
+                    title: 'Пользовательская ошибка из Скоринг',
+                    description: description,
+                    base64FileBody: screenShot,
+                    log: getEnvironment(),
+                }),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
             });
+            return resp.json();
+        } catch (err) {
+            console.log(err)
+        }
     };
-    widget.drag();
+    widget.render();
 });
