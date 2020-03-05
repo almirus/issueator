@@ -9,7 +9,7 @@ import {getEnvironment} from "./utils/environment";
 document.addEventListener("DOMContentLoaded", () => {
 
     let widget = new ButtonWidget();
-    widget.handleSend = async function () {
+    widget.handleSend = async () => {
         console.log('handleSend');
         let description = `
             url: ${window.location.href}
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             return resp.json();
         } catch (err) {
-            console.log(err)
+            console.log('Произошла ошибка', err);
         }
     };
     widget.render();

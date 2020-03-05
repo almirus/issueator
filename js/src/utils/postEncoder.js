@@ -1,3 +1,4 @@
+
 /**
  * @param {Object} object
  * @return {string}
