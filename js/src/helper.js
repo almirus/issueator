@@ -5,6 +5,7 @@ import {toFormUrlEncoder} from "./utils/postEncoder";
 import {DOM_ELEMENTS_PREFIX, SERVER_API_URL} from "./utils/const";
 import {getScreenShot} from "./utils/screenshot";
 import {getEnvironment} from "./utils/environment";
+import './css/buttonWidget.css';
 
 document.addEventListener("DOMContentLoaded", () => {
 
