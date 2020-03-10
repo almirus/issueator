@@ -9,6 +9,10 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].bundle.js',
     },
+    entry: {
+        intranetButton: ['./src/utils/polyfills.js','./src/intranetButton.js'],
+        ctrlEnter: ['./src/utils/polyfills.js','./src/ctrlEnter.js']
+    },
     module: {
         rules: [
         /*  {// заменяем elements_prefix на значение из application.properties в константах для вывода в DOM

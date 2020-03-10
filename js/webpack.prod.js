@@ -6,8 +6,4 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');*/
 
 module.exports = merge(common, {
     mode: 'production',
-    entry: {
-        intranetButton: ['./src/utils/polyfills.js','./src/intranetButton.js']
-    },
-
 });

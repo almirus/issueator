@@ -20,7 +20,7 @@ export class ButtonWidget {
         let text_area = document.createElement("textarea");
         text_area.placeholder = `Подробно опишите Вашу проблему${AUTO_SCREENSHOT_FLAG ? ', к обращению будет автоматически приложен скриншот этой страницы' : ''}`;
         text_area.setAttribute("id", DOM_ELEMENTS_PREFIX + "error_description");
-        text_area.setAttribute("required", "");
+        text_area.required = true;
         text_area.name = "description";
         let submit_button = document.createElement("button");
         submit_button.appendChild(document.createTextNode("Создать обращение"));

@@ -1,0 +1,26 @@
+#elements_prefix_text_area_div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -25px;
+    margin-left: -150px;
+    width: 300px;
+    height: 50px;
+    padding: 10px;
+    color: white;
+    font: 15px/1.5 Helvetica, Verdana, sans-serif;
+    background-color: #1ebee6;
+    border-radius: 10px 10px 10px 10px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border: 1px solid #000000;
+}
+
+#elements_prefix_error_message {
+    position: fixed;
+    top: 80px;
+    left: 5px;
+    z-index: 100;
+    padding-top: 40px;
+    color: white;
+}
