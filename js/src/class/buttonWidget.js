@@ -1,13 +1,10 @@
 import Cookies from "js-cookie";
 import {AUTO_SCREENSHOT_FLAG, DOM_ELEMENTS_PREFIX} from "../utils/const";
-
 import {dragElement} from "../utils/drag";
-import {addCSS} from "../utils/dynamicCSS";
 
 export class ButtonWidget {
     constructor(x = '40px', y = '5px') {
         console.log('call constructor');
-        addCSS();
         let button_div = document.createElement("span");
         button_div.style.top = Cookies.get(DOM_ELEMENTS_PREFIX + '_x') || x;
         button_div.style.left = Cookies.get(DOM_ELEMENTS_PREFIX + '_y') || y;
