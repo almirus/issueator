@@ -1,8 +1,8 @@
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const PropertiesReader = require('properties-reader');
-let properties = PropertiesReader('../src/main/resources/application.properties');
+/*const PropertiesReader = require('properties-reader');
+let properties = PropertiesReader('../src/main/resources/application.properties');*/
 
 module.exports = {
     output: {
@@ -11,7 +11,7 @@ module.exports = {
     },
     module: {
         rules: [
-            {// заменяем elements_prefix на значение из application.properties в константах для вывода в DOM
+        /*  {// заменяем elements_prefix на значение из application.properties в константах для вывода в DOM
                 test: /const\.js|.+\.css$/,
                 loader: 'string-replace-loader',
                 exclude: /node_modules/,
@@ -19,7 +19,7 @@ module.exports = {
                     search: 'elements_prefix',
                     replace: properties.get('jira.issue.project.key'),
                 }
-            },
+            },*/
             {// используем динамическую загрузку CSS
                 test: /\.css$/i,
                 exclude: /node_modules/,

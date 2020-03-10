@@ -5,6 +5,6 @@ module.exports = merge(common, {
     mode: 'development',
     devtool: 'inline-source-map',
     entry: {
-        index: ['./src/utils/polyfills.js','./src/helper.js']
+        intranetButton: ['./src/utils/polyfills.js','./src/intranetButton.js']
     },
 });

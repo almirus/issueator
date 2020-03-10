@@ -46,6 +46,7 @@ export class ButtonWidget {
             textarea_div.style.visibility = "hidden";
             // отправляем собранную информацию
             this.handleSend().then(result => {
+                console.log('get result', result);
                 result_area.style.visibility = "visible";
                 if (result && result.link) {
                     result_area.appendChild(document.createTextNode("Вы можете отредактировать созданное обращение "));
@@ -55,18 +56,17 @@ export class ButtonWidget {
                     a.title = "перейти в обращение";
                     a.appendChild(document.createTextNode("по ссылке"));
                     result_area.appendChild(a);
-                }else{
-                    result_area.appendChild(document.createTextNode("Произошла ошибка при создании обращения, подробности в логе"));
+                } else {
+                    result_area.appendChild(document.createTextNode("Произошла ошибка при создании обращения, подробности в консоли"));
                 }
                 let close = document.createElement('span');
-                close.title ="Закрыть";
-                close.className='close';
+                close.title = "Закрыть";
+                close.className = 'close';
                 close.onclick = () => {
                     result_area.style.visibility = "hidden";
                 };
                 result_area.setAttribute("id", DOM_ELEMENTS_PREFIX + "result");
                 result_area.appendChild(close);
-                console.log(result);
             });
         };
         this._result = result_area;

@@ -1,5 +1,5 @@
 import 'es6-promise/auto';
-import'whatwg-fetch';
+import 'whatwg-fetch';
 
 let objectToEntriesPolyfill = function(object) {
     return Object
