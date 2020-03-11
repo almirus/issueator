@@ -11,7 +11,8 @@ module.exports = {
     },
     entry: {
         intranetButton: ['./src/utils/polyfills.js','./src/intranetButton.js'],
-        ctrlEnter: ['./src/utils/polyfills.js','./src/ctrlEnter.js']
+        ctrlEnter: ['./src/utils/polyfills.js','./src/ctrlEnter.js'],
+        dummy: ['./src/utils/polyfills.js','./src/dummy.js']
     },
     module: {
         rules: [

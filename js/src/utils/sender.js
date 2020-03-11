@@ -5,8 +5,8 @@ export async function send({
                                api_url = SERVER_API_URL,
                                title = 'Пользовательская ошибка',
                                description = '',
-                               log = undefined,
-                               screenshot = undefined,
+                               log = '',
+                               screenshot = '',
                            } = {}) {
     // объект для функции toFormUrlEncoder из входящих параметров
     let body = {
