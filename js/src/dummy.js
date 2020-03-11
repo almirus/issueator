@@ -25,6 +25,6 @@ ${log}`;
         if (result)
             console.log('is OK');
         else
-            console.error('isn\t OK')
+            console.error('isn\'t OK')
     })
 });

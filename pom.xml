@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.technology</groupId>
     <artifactId>issueator</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>issueator</name>
     <description>Create issue for jira</description>
 
@@ -32,17 +32,10 @@
             <version>1.4.7.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <version>2.2.4.RELEASE</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -82,7 +75,6 @@
             <version>2.2.1.RELEASE</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
     <dependencyManagement>
         <dependencies>

@@ -41,7 +41,7 @@ public class MockRestTest {
         IssueResponse issue = IssueResponse.builder()
                 .id("1000")
                 .key("CR-5")
-                .self("url")
+                .link("url")
                 .build();
 
         when(accountServiceMock.getIssue("CR-5", "summary")).thenReturn(issue);
@@ -51,6 +51,6 @@ public class MockRestTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1000))
                 .andExpect(jsonPath("$.key").value("CR-5"))
-                .andExpect(jsonPath("$.self").value("url"));
+                .andExpect(jsonPath("$.link").value("url"));
     }
 }

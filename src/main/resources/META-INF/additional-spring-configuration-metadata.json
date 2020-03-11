@@ -29,5 +29,10 @@
       "name": "jira.issue.priority.id",
       "type": "java.lang.String",
       "description": "Jira bug priority id."
+    },
+    {
+      "name": "tomcat.ajp.port",
+      "type": "java.lang.String",
+      "description": "Tomcat ajp port."
     }
   ] }
