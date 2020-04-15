@@ -45,7 +45,7 @@ public class IssueService {
             }
         };
         multiValueMap.add("file", contentsAsResource);
-        return jiraClient.uploadAttachment("no-check", issueIdOrKey, multiValueMap);
+        return jiraClient.uploadAttachment(issueIdOrKey, multiValueMap);
     }
 
     public List<Attachment> uploadAttachment(String issueIdOrKey, String base64body, String log) {
@@ -74,7 +74,7 @@ public class IssueService {
             };
             multiValueMap.add("file", contentsAsResource);
         }
-        return jiraClient.uploadAttachment("no-check", issueIdOrKey, multiValueMap);
+        return jiraClient.uploadAttachment(issueIdOrKey, multiValueMap);
     }
 
     public IssueResponse createIssue(ClientIssue clientIssue) {

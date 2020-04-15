@@ -20,9 +20,9 @@ public interface JiraClient {
 
     @PostMapping(value = "/rest/api/2/issue/{issueIdOrKey}/attachments",
             consumes = MULTIPART_FORM_DATA_VALUE,
-            produces = APPLICATION_JSON_VALUE)
-    List<Attachment> uploadAttachment(@RequestHeader(value="X-Atlassian-Token", defaultValue = "no-check") String XSRF,
-                                      @PathVariable String issueIdOrKey,
+            produces = APPLICATION_JSON_VALUE,
+            headers = "X-Atlassian-Token=no-check")
+    List<Attachment> uploadAttachment(@PathVariable String issueIdOrKey,
                                       @RequestPart(name = "file") MultiValueMap<String, Object> file);
 
     @GetMapping("/rest/api/2/issue/{issueIdOrKey}")
