@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import {AUTO_SCREENSHOT_FLAG, DOM_ELEMENTS_PREFIX} from "../utils/const";
 import {dragElement} from "../utils/drag";
+import {getScreenShot} from "../utils/screenshot";
 
 export class ButtonWidget {
     constructor(x = '40px', y = '5px') {
@@ -26,14 +27,77 @@ export class ButtonWidget {
         submit_button.appendChild(document.createTextNode("Создать обращение"));
         let cancel_button = document.createElement("button");
         cancel_button.appendChild(document.createTextNode("Отмена"));
+        let paint_button = document.createElement("button");
+        paint_button.setAttribute('title', 'Нарисовать на скриншоте');
+        paint_button.appendChild(document.createTextNode("🎨"));
         textarea_div.appendChild(text_area);
         textarea_div.appendChild(document.createElement("br"));
         textarea_div.appendChild(submit_button);
         textarea_div.appendChild(cancel_button);
+        textarea_div.appendChild(paint_button);
         let result_area = document.createElement("div");
         result_area.setAttribute("id", DOM_ELEMENTS_PREFIX + "result");
         result_area.style.visibility = "hidden";
 
+
+        paint_button.onclick = async () => {
+            button_div.style.visibility = "hidden";
+            textarea_div.style.visibility = "hidden";
+            let screenShot = await getScreenShot();
+            // canvas на котором будеим рисовать
+            let canvas = document.createElement("canvas");
+            canvas.setAttribute("id", DOM_ELEMENTS_PREFIX + "paint_canvas");
+            canvas.setAttribute('style', "background: #000; padding: 0;margin: 0 auto; cursor:crosshair; position:absolute; left:0; top:0;");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            let end_paint_button = document.createElement('button');
+            end_paint_button.appendChild(document.createTextNode("Готово"));
+            end_paint_button.setAttribute('title', 'Завершить рисование');
+            end_paint_button.setAttribute('style', 'left:0;top:0;position:fixed;');
+            end_paint_button.onclick = () => {
+                console.log('painting end');
+                this._screenshot = screen_canvas;
+                button_div.style.visibility = "visible";
+                textarea_div.style.visibility = "visible";
+                document.body.removeChild(canvas);
+                document.body.removeChild(end_paint_button);
+            }
+            document.body.appendChild(canvas);
+            document.body.appendChild(end_paint_button);
+            let destCtx = canvas.getContext('2d');
+            let screen_canvas = new Image;
+            screen_canvas.onload = function () {
+                // рисуем сначала в наш canvas скриншот
+                destCtx.drawImage(screen_canvas, 0, 0);
+            };
+            screen_canvas.src = screenShot;
+            destCtx.lineCap = 'round';
+            destCtx.lineWidth = 8;
+            destCtx.strokeStyle = "rgba(255,255,0, 0.5)";
+            let prevX = 0;
+            let prevY = 0;
+            canvas.onmousemove = (e) => {
+                let x = e.offsetX;
+                let y = e.offsetY;
+                // explorer не поддерживает movementX movementY - эмулируем
+                let movementX = (prevX ? e.screenX - prevX : 0)
+                let movementY = (prevY ? e.screenY - prevY : 0)
+                prevX = e.screenX;
+                prevY = e.screenY;
+
+                let dx = e.movementX|| movementX;
+                let dy = e.movementY || movementY;
+                //если нажата кнопка мыши, рисуем
+                if (e.buttons > 0) {
+                    destCtx.beginPath();
+                    destCtx.moveTo(x, y);
+                    destCtx.lineTo(x - dx, y - dy);
+                    destCtx.stroke();
+                    destCtx.closePath();
+
+                }
+            };
+        }
         cancel_button.onclick = () => {
             textarea_div.style.visibility = "hidden";
             text_area.value = "";
@@ -41,7 +105,7 @@ export class ButtonWidget {
         button_div.onclick = () => {
             textarea_div.style.visibility = "visible";
         };
-        submit_button.onclick = () => {
+        submit_button.onclick = async () => {
             button_div.style.visibility = "hidden";
             textarea_div.style.visibility = "hidden";
             // отправляем собранную информацию
@@ -80,5 +144,10 @@ export class ButtonWidget {
         document.body.appendChild(this._result);
         dragElement(this._button, this._children);
         console.log('call render');
+    }
+
+    screenshot() {
+        console.log('get edited screenshot');
+        return this._screenshot;
     }
 }

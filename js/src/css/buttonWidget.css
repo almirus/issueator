@@ -83,7 +83,9 @@
     padding-top: 40px;
     color: white;
 }
-
+#elements_prefix_error_message button{
+    height: 23px;
+}
 #elements_prefix_submit_error_button span {
     max-width: 0;
     -webkit-transition: max-width 1s;

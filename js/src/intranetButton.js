@@ -17,7 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
             url: ${window.location.href}
             time: ${new Date().toLocaleString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone})
             ${document.getElementById(DOM_ELEMENTS_PREFIX + "error_description").value}`;
-        let screenShot = await getScreenShot();
+        // получаем отредактированный скриншот через виджет или обычный
+        let screenShot = widget.screenshot() || await getScreenShot();
         let log = getEnvironment();
         // -----> отправка данных на сервис
         return await send({
