@@ -1,5 +1,6 @@
 import 'es6-promise/auto';
 import 'whatwg-fetch';
+import 'array-from-polyfill';
 
 let objectToEntriesPolyfill = function(object) {
     return Object
@@ -11,3 +12,4 @@ let objectToEntriesPolyfill = function(object) {
         );
 };
 Object.entries = Object.entries || objectToEntriesPolyfill;
+

@@ -1,9 +1,9 @@
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 /*const PropertiesReader = require('properties-reader');
 let properties = PropertiesReader('../src/main/resources/application.properties');*/
-
 module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -43,6 +43,14 @@ module.exports = {
             generateStatsFile: true,
             statsOptions: {source: false}
         }),
+        new FileManagerPlugin({
+            onEnd: {
+                copy: [
+                    // кладем бандля в приложение спрингбут как статик ресурс
+                    {source: path.resolve(__dirname, 'dist')+'/*.js', destination: path.resolve(__dirname, '../src/main/resources/static')},
+                ],
+            }
+        })
     ],
 };
 console.warn(process.env.NODE_ENV);

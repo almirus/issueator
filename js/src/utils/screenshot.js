@@ -1,11 +1,10 @@
 import {AUTO_SCREENSHOT_FLAG} from "./const";
+import html2canvas from "html2canvas";
 
-export async function getScreenShot() {
+export async function getScreenShot(selector=document.body) {
     let img = '';
     if (AUTO_SCREENSHOT_FLAG) {
-        let html2canvas = await import( /* webpackChunkName: "html2canvas" */ "html2canvas");
-        html2canvas = html2canvas.default ? html2canvas.default : html2canvas;
-        img = Promise.all([html2canvas(document.body).then(canvas => {
+        img = Promise.all([html2canvas(selector).then(canvas => {
             return canvas.toDataURL("image/png");
         })]);
     }

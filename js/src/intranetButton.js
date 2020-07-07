@@ -1,11 +1,9 @@
 'use strict';
 
 import {ButtonWidget} from "./class/buttonWidget";
-import {DOM_ELEMENTS_PREFIX} from "./utils/const";
-import {getScreenShot} from "./utils/screenshot";
-import {getEnvironment} from "./utils/environment";
 import './css/buttonWidget.css';
 import {send} from "./utils/sender";
+import {DOM_ELEMENTS_PREFIX} from "./utils/const";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -14,12 +12,15 @@ document.addEventListener("DOMContentLoaded", () => {
     widget.handleSend = async () => {
         console.log('handleSend');
         let description = `
-            url: ${window.location.href}
+            url: ${widget.url()}
             time: ${new Date().toLocaleString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone})
             ${document.getElementById(DOM_ELEMENTS_PREFIX + "error_description").value}`;
         // получаем отредактированный скриншот через виджет или обычный
-        let screenShot = widget.screenshot() || await getScreenShot();
-        let log = getEnvironment();
+        let screenShot = widget.screenshot();
+        let log = `
+        ${JSON.stringify(widget.serverEnvironment())}
+        ${widget.clientEnvironment()}
+        `;
         // -----> отправка данных на сервис
         return await send({
             title: 'Пользовательская ошибка',

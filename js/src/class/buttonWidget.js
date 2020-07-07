@@ -2,6 +2,9 @@ import Cookies from "js-cookie";
 import {AUTO_SCREENSHOT_FLAG, DOM_ELEMENTS_PREFIX} from "../utils/const";
 import {dragElement} from "../utils/drag";
 import {getScreenShot} from "../utils/screenshot";
+import {getActiveFrame} from "../utils/getActiveFrame";
+import {getEnvironment} from "../utils/environment";
+import {getVersionFromActuator} from "../utils/getActuator";
 
 export class ButtonWidget {
     constructor(x = '40px', y = '5px') {
@@ -39,24 +42,28 @@ export class ButtonWidget {
         result_area.setAttribute("id", DOM_ELEMENTS_PREFIX + "result");
         result_area.style.visibility = "hidden";
 
-
         paint_button.onclick = async () => {
             button_div.style.visibility = "hidden";
             textarea_div.style.visibility = "hidden";
-            let screenShot = await getScreenShot();
-            // canvas на котором будеим рисовать
+            // для intranet приложений сохраняет скрин активного iframe
+            let activeFrame = getActiveFrame();
+            let screenShot = await getScreenShot(activeFrame.body);
+            // canvas на котором будем рисовать
             let canvas = document.createElement("canvas");
             canvas.setAttribute("id", DOM_ELEMENTS_PREFIX + "paint_canvas");
             canvas.setAttribute('style', "background: #000; padding: 0;margin: 0 auto; cursor:crosshair; position:absolute; left:0; top:0;");
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             let end_paint_button = document.createElement('button');
-            end_paint_button.appendChild(document.createTextNode("Готово"));
+            end_paint_button.appendChild(document.createTextNode("Готово 🎨"));
             end_paint_button.setAttribute('title', 'Завершить рисование');
-            end_paint_button.setAttribute('style', 'left:0;top:0;position:fixed;');
-            end_paint_button.onclick = () => {
+            let rect = paint_button.getBoundingClientRect();
+            end_paint_button.setAttribute('style', `left:${rect.left}px;top:${rect.top}px;position:fixed;`);
+            end_paint_button.onclick = async () => {
                 console.log('painting end');
                 this._screenshot = screen_canvas;
+                this._url = activeFrame.url;
+                this._serverEnvironment = await getVersionFromActuator(activeFrame.url);
                 button_div.style.visibility = "visible";
                 textarea_div.style.visibility = "visible";
                 document.body.removeChild(canvas);
@@ -67,8 +74,9 @@ export class ButtonWidget {
             let destCtx = canvas.getContext('2d');
             let screen_canvas = new Image;
             screen_canvas.onload = function () {
-                // рисуем сначала в наш canvas скриншот
-                destCtx.drawImage(screen_canvas, 0, 0);
+                let rect = activeFrame.body.getBoundingClientRect();
+                // рисуем сначала в наш canvas скриншот, центрируем
+                destCtx.drawImage(screen_canvas, (window.innerWidth - rect.width) / 2, (window.innerHeight - rect.height) / 2);
             };
             screen_canvas.src = screenShot;
             destCtx.lineCap = 'round';
@@ -85,7 +93,7 @@ export class ButtonWidget {
                 prevX = e.screenX;
                 prevY = e.screenY;
 
-                let dx = e.movementX|| movementX;
+                let dx = e.movementX || movementX;
                 let dy = e.movementY || movementY;
                 //если нажата кнопка мыши, рисуем
                 if (e.buttons > 0) {
@@ -108,6 +116,10 @@ export class ButtonWidget {
         submit_button.onclick = async () => {
             button_div.style.visibility = "hidden";
             textarea_div.style.visibility = "hidden";
+            let activeFrame = getActiveFrame();
+            this._screenshot = await getScreenShot(activeFrame.body);
+            this._url = activeFrame.url;
+            this._serverEnvironment = await getVersionFromActuator(activeFrame.url);
             // отправляем собранную информацию
             this.handleSend().then(result => {
                 console.log('get result', result);
@@ -149,5 +161,17 @@ export class ButtonWidget {
     screenshot() {
         console.log('get edited screenshot');
         return this._screenshot;
+    }
+    url(){
+        console.log('get iframe url');
+        return this._url;
+    }
+    serverEnvironment(){
+        console.log('get server environment');
+        return this._serverEnvironment;
+    }
+    clientEnvironment(){
+        console.log('get client environment');
+        return getEnvironment();
     }
 }
