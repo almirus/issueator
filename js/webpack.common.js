@@ -46,7 +46,7 @@ module.exports = {
         new FileManagerPlugin({
             onEnd: {
                 copy: [
-                    // кладем бандля в приложение спрингбут как статик ресурс
+                    // кладем бандлы  в приложение спрингбут как статик ресурс
                     {source: path.resolve(__dirname, 'dist')+'/*.js', destination: path.resolve(__dirname, '../src/main/resources/static')},
                 ],
             }

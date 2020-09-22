@@ -18,8 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // получаем отредактированный скриншот через виджет или обычный
         let screenShot = widget.screenshot();
         let log = `
-        ${JSON.stringify(widget.serverEnvironment())}
-        ${widget.clientEnvironment()}
+            ${widget.serverEnvironment()}
+            ${widget.clientEnvironment()}
         `;
         // -----> отправка данных на сервис
         return await send({

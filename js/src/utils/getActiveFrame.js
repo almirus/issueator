@@ -1,6 +1,7 @@
 import {IFRAME_SELECTOR} from "./const";
 
 // ищем в DOM активный (открытый) iframe если не найдем возвращаем html.body
+// специфично для jepria gwt приложений
 export function getActiveFrame() {
     let result = document.body;
     let url = document.URL;

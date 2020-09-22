@@ -4,8 +4,13 @@ export async function getVersionFromActuator(url) {
     // берем url до папки с приложение
     let appUrl = url.match(/.+(\/)(?!.*\1)/gm)
     if (appUrl) {
-        const resp = await fetch(appUrl + ACTUATOR_URL);
-        return await resp.json();
+        try {
+            const resp = await fetch(appUrl + ACTUATOR_URL);
+            if (resp.ok)
+                return await JSON.stringify(resp.json());
+        } catch (error) {
+            console.error(error)
+        }
     }
     return '';
 }

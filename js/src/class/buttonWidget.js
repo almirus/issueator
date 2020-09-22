@@ -45,9 +45,12 @@ export class ButtonWidget {
         paint_button.onclick = async () => {
             button_div.style.visibility = "hidden";
             textarea_div.style.visibility = "hidden";
-            // для intranet приложений сохраняет скрин активного iframe
+            // для intranet приложений сохраняет скрин активного iframe или окна
             let activeFrame = getActiveFrame();
-            let screenShot = await getScreenShot(activeFrame.body);
+            // скриншот основного окна
+            let screenShotMain = await getScreenShot(document.body);
+            // скриншот области с приложением - специфично для jepria и gwt
+            let screenShotFrame = await getScreenShot(activeFrame.body);
             // canvas на котором будем рисовать
             let canvas = document.createElement("canvas");
             canvas.setAttribute("id", DOM_ELEMENTS_PREFIX + "paint_canvas");
@@ -61,7 +64,7 @@ export class ButtonWidget {
             end_paint_button.setAttribute('style', `left:${rect.left}px;top:${rect.top}px;position:fixed;`);
             end_paint_button.onclick = async () => {
                 console.log('painting end');
-                this._screenshot = screen_canvas;
+                this._screenshot = canvas.toDataURL("image/png");
                 this._url = activeFrame.url;
                 this._serverEnvironment = await getVersionFromActuator(activeFrame.url);
                 button_div.style.visibility = "visible";
@@ -72,13 +75,22 @@ export class ButtonWidget {
             document.body.appendChild(canvas);
             document.body.appendChild(end_paint_button);
             let destCtx = canvas.getContext('2d');
-            let screen_canvas = new Image;
-            screen_canvas.onload = function () {
-                let rect = activeFrame.body.getBoundingClientRect();
-                // рисуем сначала в наш canvas скриншот, центрируем
-                destCtx.drawImage(screen_canvas, (window.innerWidth - rect.width) / 2, (window.innerHeight - rect.height) / 2);
+
+            let screen_main_image = new Image;
+            screen_main_image.onload = function () {
+                // рисуем сначала в наш canvas скриншот - основное окно
+                destCtx.drawImage(screen_main_image, 0, 0);
             };
-            screen_canvas.src = screenShot;
+            screen_main_image.src = screenShotMain;
+
+            let screen_frame_image = new Image;
+            screen_frame_image.onload = function () {
+                let frame_rect = activeFrame.body.getBoundingClientRect();
+                // рисуем сначала в наш canvas скриншот - iframe
+                destCtx.drawImage(screen_frame_image, window.innerWidth - frame_rect.width, window.innerHeight - frame_rect.height);
+            };
+            screen_frame_image.src = screenShotFrame;
+
             destCtx.lineCap = 'round';
             destCtx.lineWidth = 8;
             destCtx.strokeStyle = "rgba(255,255,0, 0.5)";
@@ -102,7 +114,6 @@ export class ButtonWidget {
                     destCtx.lineTo(x - dx, y - dy);
                     destCtx.stroke();
                     destCtx.closePath();
-
                 }
             };
         }
@@ -117,7 +128,7 @@ export class ButtonWidget {
             button_div.style.visibility = "hidden";
             textarea_div.style.visibility = "hidden";
             let activeFrame = getActiveFrame();
-            this._screenshot = await getScreenShot(activeFrame.body);
+            this._screenshot ||= await getScreenShot(activeFrame.body);
             this._url = activeFrame.url;
             this._serverEnvironment = await getVersionFromActuator(activeFrame.url);
             // отправляем собранную информацию
@@ -162,15 +173,18 @@ export class ButtonWidget {
         console.log('get edited screenshot');
         return this._screenshot;
     }
-    url(){
+
+    url() {
         console.log('get iframe url');
         return this._url;
     }
-    serverEnvironment(){
+
+    serverEnvironment() {
         console.log('get server environment');
         return this._serverEnvironment;
     }
-    clientEnvironment(){
+
+    clientEnvironment() {
         console.log('get client environment');
         return getEnvironment();
     }
