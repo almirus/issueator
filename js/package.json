@@ -8,7 +8,7 @@
   "version": "1.0.0",
   "dependencies": {
     "es6-promise": "^4.2.8",
-    "html2canvas": "latest",
+    "html2canvas": "^1.0.0-rc.7",
     "js-cookie": "^2.2.1",
     "whatwg-fetch": "^3.4.1",
     "array-from-polyfill": "^1.0.1"

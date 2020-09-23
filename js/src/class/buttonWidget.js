@@ -9,23 +9,27 @@ import {getVersionFromActuator} from "../utils/getActuator";
 export class ButtonWidget {
     constructor(x = '40px', y = '5px') {
         console.log('call constructor');
+        // плавающая кнопка Создать обращение
         let button_div = document.createElement("span");
         button_div.style.top = Cookies.get(DOM_ELEMENTS_PREFIX + '_x') || x;
         button_div.style.left = Cookies.get(DOM_ELEMENTS_PREFIX + '_y') || y;
         button_div.setAttribute("id", DOM_ELEMENTS_PREFIX + "submit_error_button");
         button_div.innerHTML = "&#8227; Ошибка <span>Создать обращение в Jira</span>";
+        // поле для ввода, пока невидимое
         let textarea_div = document.createElement("span");
         textarea_div.setAttribute("id", DOM_ELEMENTS_PREFIX + "error_message");
         textarea_div.style.visibility = "hidden";
-
         textarea_div.style.top = Cookies.get(DOM_ELEMENTS_PREFIX + '_x') || x;
         textarea_div.style.left = Cookies.get(DOM_ELEMENTS_PREFIX + '_y') || y;
-
         let text_area = document.createElement("textarea");
         text_area.placeholder = `Подробно опишите Вашу проблему${AUTO_SCREENSHOT_FLAG ? ', к обращению будет автоматически приложен скриншот этой страницы' : ''}`;
         text_area.setAttribute("id", DOM_ELEMENTS_PREFIX + "error_description");
         text_area.required = true;
         text_area.name = "description";
+
+        // кнопки Создать Отмена Нарисовать
+        let buttons_container = document.createElement("div");
+        buttons_container.setAttribute("id", DOM_ELEMENTS_PREFIX + "buttons_container");
         let submit_button = document.createElement("button");
         submit_button.appendChild(document.createTextNode("Создать обращение"));
         let cancel_button = document.createElement("button");
@@ -34,14 +38,15 @@ export class ButtonWidget {
         paint_button.setAttribute('title', 'Нарисовать на скриншоте');
         paint_button.appendChild(document.createTextNode("🎨"));
         textarea_div.appendChild(text_area);
-        textarea_div.appendChild(document.createElement("br"));
-        textarea_div.appendChild(submit_button);
-        textarea_div.appendChild(cancel_button);
-        textarea_div.appendChild(paint_button);
+        buttons_container.appendChild(submit_button);
+        buttons_container.appendChild(cancel_button);
+        buttons_container.appendChild(paint_button);
+        textarea_div.appendChild(buttons_container);
+
         let result_area = document.createElement("div");
         result_area.setAttribute("id", DOM_ELEMENTS_PREFIX + "result");
         result_area.style.visibility = "hidden";
-
+        // нажали кнопку нарисовать на скриншоте
         paint_button.onclick = async () => {
             button_div.style.visibility = "hidden";
             textarea_div.style.visibility = "hidden";
@@ -54,14 +59,16 @@ export class ButtonWidget {
             // canvas на котором будем рисовать
             let canvas = document.createElement("canvas");
             canvas.setAttribute("id", DOM_ELEMENTS_PREFIX + "paint_canvas");
-            canvas.setAttribute('style', "background: #000; padding: 0;margin: 0 auto; cursor:crosshair; position:absolute; left:0; top:0;");
+            canvas.setAttribute('style', "background: #000; padding: 0;margin: 0 auto; cursor:crosshair; position:absolute; left:0; top:0; border: 2px dashed yellow;");
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             let end_paint_button = document.createElement('button');
             end_paint_button.appendChild(document.createTextNode("Готово 🎨"));
             end_paint_button.setAttribute('title', 'Завершить рисование');
+            // реальные координаты кнопки начать Рисование, нужны чтобы отобразить там же кнопку завершения
             let rect = paint_button.getBoundingClientRect();
             end_paint_button.setAttribute('style', `left:${rect.left}px;top:${rect.top}px;position:fixed;`);
+            // клик по кнопке Завершить рисование
             end_paint_button.onclick = async () => {
                 console.log('painting end');
                 this._screenshot = canvas.toDataURL("image/png");
@@ -75,27 +82,28 @@ export class ButtonWidget {
             document.body.appendChild(canvas);
             document.body.appendChild(end_paint_button);
             let destCtx = canvas.getContext('2d');
-
             let screen_main_image = new Image;
             screen_main_image.onload = function () {
                 // рисуем сначала в наш canvas скриншот - основное окно
                 destCtx.drawImage(screen_main_image, 0, 0);
             };
             screen_main_image.src = screenShotMain;
-
-            let screen_frame_image = new Image;
-            screen_frame_image.onload = function () {
-                let frame_rect = activeFrame.body.getBoundingClientRect();
-                // рисуем сначала в наш canvas скриншот - iframe
-                destCtx.drawImage(screen_frame_image, window.innerWidth - frame_rect.width, window.innerHeight - frame_rect.height);
-            };
-            screen_frame_image.src = screenShotFrame;
-
+            if (document.body !== activeFrame.body) {
+                let screen_frame_image = new Image;
+                screen_frame_image.onload = function () {
+                    let frame_rect = activeFrame.body.getBoundingClientRect();
+                    // рисуем в наш canvas скриншот - iframe
+                    destCtx.drawImage(screen_frame_image, window.innerWidth - frame_rect.width - 16, window.innerHeight - frame_rect.height - 16);
+                };
+                screen_frame_image.src = screenShotFrame;
+            }
+            // перо для рисования на скрине
             destCtx.lineCap = 'round';
             destCtx.lineWidth = 8;
             destCtx.strokeStyle = "rgba(255,255,0, 0.5)";
             let prevX = 0;
             let prevY = 0;
+            // рисуем на канвасе при движении мыши
             canvas.onmousemove = (e) => {
                 let x = e.offsetX;
                 let y = e.offsetY;
@@ -117,6 +125,7 @@ export class ButtonWidget {
                 }
             };
         }
+        // закрываем окно
         cancel_button.onclick = () => {
             textarea_div.style.visibility = "hidden";
             text_area.value = "";
@@ -124,10 +133,12 @@ export class ButtonWidget {
         button_div.onclick = () => {
             textarea_div.style.visibility = "visible";
         };
+        // клик по кнопке отправки данных
         submit_button.onclick = async () => {
             button_div.style.visibility = "hidden";
             textarea_div.style.visibility = "hidden";
             let activeFrame = getActiveFrame();
+            // или скрина с нарисованным на канвасе или новый скрин окна
             this._screenshot ||= await getScreenShot(activeFrame.body);
             this._url = activeFrame.url;
             this._serverEnvironment = await getVersionFromActuator(activeFrame.url);

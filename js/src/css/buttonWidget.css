@@ -56,7 +56,7 @@
 }
 
 #elements_prefix_error_description {
-    min-width: 235px;
+    min-width: 255px;
     min-height: 100px;
 }
 
@@ -83,8 +83,21 @@
     padding-top: 40px;
     color: white;
 }
-#elements_prefix_error_message button{
-    height: 23px;
+#elements_prefix_error_message textarea{
+    display: block;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+#elements_prefix_buttons_container{
+    text-align: right;
+}
+#elements_prefix_buttons_container button{
+    height: 30px;
+    vertical-align:middle;
+    padding: 5px;
+    margin: 4px;
 }
 #elements_prefix_submit_error_button span {
     max-width: 0;
