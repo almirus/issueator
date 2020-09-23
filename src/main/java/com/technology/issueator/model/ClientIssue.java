@@ -7,10 +7,18 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class ClientIssue {
-    @NotNull @ApiModelProperty(required = true)
+    @NotNull
+    @ApiModelProperty(required = true)
     String title;
-    @NotNull @ApiModelProperty(required = true)
+    @NotNull
+    @ApiModelProperty(required = true)
     String description;
     String base64FileBody;
     String log;
+
+    @Override
+    public String toString() {
+        return "title=" + title + "description=" + description + ", log=" + log;
+
+    }
 }
