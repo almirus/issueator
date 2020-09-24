@@ -21,12 +21,12 @@ export function getErrorMessage(document) {
     if (error_window) {
         // стек ошибки
         let stack = '';
-        const children = [...document.getElementsByTagName('textarea')];
+        const children = [...error_window.querySelectorAll('textarea')];
         children.forEach((textarea) => {
             stack += textarea.value;
         });
         // читаемая ошибка + стек
-        return (error_window.innerText || '').replace(/\n{2,}/g, '\n') + stack;
+        return (error_window.innerText || '').replace(/\t\n/g, '').replace(/\n+/g, '\n') + stack;
     } else {
         return '';
     }
