@@ -17,9 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
             ${document.getElementById(DOM_ELEMENTS_PREFIX + "error_description").value}`;
         // получаем отредактированный скриншот через виджет или обычный
         let screenShot = widget.screenshot();
-        let log = `
-            ${widget.serverEnvironment()}
-            ${widget.clientEnvironment()}
+        let log =`
+SERVER INFORMATION: ${widget.serverEnvironment()}
+CLIENT INFORMATION: ${widget.clientEnvironment()}
+CLIENT ERROR STACK: ${widget.clientErrorMessage()}
         `;
         // -----> отправка данных на сервис
         return await send({
