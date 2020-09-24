@@ -7,7 +7,7 @@ export async function getVersionFromActuator(url) {
         try {
             const resp = await fetch(appUrl + ACTUATOR_URL);
             if (resp.ok)
-                return await JSON.stringify(resp.json());
+                return JSON.stringify(await resp.json());
         } catch (error) {
             console.error(error)
         }
