@@ -3,7 +3,7 @@ import {AUTO_SCREENSHOT_FLAG, DOM_ELEMENTS_PREFIX} from "../utils/const";
 import {dragElement} from "../utils/drag";
 import {getScreenShot} from "../utils/screenshot";
 import {getActiveFrame} from "../utils/getActiveFrame";
-import {getEnvironment} from "../utils/environment";
+import {getEnvironment, getErrorMessage} from "../utils/environment";
 import {getVersionFromActuator} from "../utils/getActuator";
 
 export class ButtonWidget {
@@ -55,7 +55,7 @@ export class ButtonWidget {
             // скриншот основного окна
             let screenShotMain = await getScreenShot(document.body);
             // скриншот области с приложением - специфично для jepria и gwt
-            let screenShotFrame = await getScreenShot(activeFrame.body);
+            let screenShotFrame = await getScreenShot(activeFrame.document.body);
             // canvas на котором будем рисовать
             let canvas = document.createElement("canvas");
             canvas.setAttribute("id", DOM_ELEMENTS_PREFIX + "paint_canvas");
@@ -72,8 +72,6 @@ export class ButtonWidget {
             end_paint_button.onclick = async () => {
                 console.log('painting end');
                 this._screenshot = canvas.toDataURL("image/png");
-                this._url = activeFrame.url;
-                this._serverEnvironment = await getVersionFromActuator(activeFrame.url);
                 button_div.style.visibility = "visible";
                 textarea_div.style.visibility = "visible";
                 document.body.removeChild(canvas);
@@ -88,10 +86,10 @@ export class ButtonWidget {
                 destCtx.drawImage(screen_main_image, 0, 0);
             };
             screen_main_image.src = screenShotMain;
-            if (document.body !== activeFrame.body) {
+            if (document.body !== activeFrame.document.body) {
                 let screen_frame_image = new Image;
                 screen_frame_image.onload = function () {
-                    let frame_rect = activeFrame.body.getBoundingClientRect();
+                    let frame_rect =  activeFrame.document.body.getBoundingClientRect();
                     // рисуем в наш canvas скриншот - iframe
                     destCtx.drawImage(screen_frame_image, window.innerWidth - frame_rect.width - 16, window.innerHeight - frame_rect.height - 16);
                 };
@@ -139,9 +137,11 @@ export class ButtonWidget {
             textarea_div.style.visibility = "hidden";
             let activeFrame = getActiveFrame();
             // или скрина с нарисованным на канвасе или новый скрин окна
-            this._screenshot ||= await getScreenShot(activeFrame.body);
+            this._screenshot ||= await getScreenShot(activeFrame.document.body);
             this._url = activeFrame.url;
             this._serverEnvironment = await getVersionFromActuator(activeFrame.url);
+            // специфично для JepRia извлекаем сообщение об ошибке
+            this._clientErrorMessage = getErrorMessage(activeFrame.document);
             // отправляем собранную информацию
             this.handleSend().then(result => {
                 console.log('get result', result);
@@ -198,5 +198,10 @@ export class ButtonWidget {
     clientEnvironment() {
         console.log('get client environment');
         return getEnvironment();
+    }
+
+    clientErrorMessage() {
+        console.log('get gwt client error');
+        return this._clientErrorMessage;
     }
 }
