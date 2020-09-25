@@ -47,8 +47,20 @@ public class IssueService {
         multiValueMap.add("file", contentsAsResource);
         return jiraClient.uploadAttachment(issueIdOrKey, multiValueMap);
     }
-
-    public List<Attachment> uploadAttachment(String issueIdOrKey, String base64body, String log) {
+    public List<Attachment> uploadLogAttachment(String issueIdOrKey, String log) {
+        MultiValueMap<String, Object> multiValueMap = new LinkedMultiValueMap<>();
+        if (!log.isEmpty()) {
+            ByteArrayResource contentsAsResource = new ByteArrayResource(log.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return "exception.log";
+                }
+            };
+            multiValueMap.add("file", contentsAsResource);
+        }
+        return jiraClient.uploadAttachment(issueIdOrKey, multiValueMap);
+    }
+    public List<Attachment> uploadImageAttachment(String issueIdOrKey, String base64body) {
         MultiValueMap<String, Object> multiValueMap = new LinkedMultiValueMap<>();
         if (!base64body.isEmpty()) {
             String[] part = base64body.split(",");
@@ -64,15 +76,6 @@ public class IssueService {
             } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException iae) {
                 throw new Base64ConvertException();
             }
-        }
-        if (!log.isEmpty()) {
-            ByteArrayResource contentsAsResource = new ByteArrayResource(log.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return "exception.log";
-                }
-            };
-            multiValueMap.add("file", contentsAsResource);
         }
         return jiraClient.uploadAttachment(issueIdOrKey, multiValueMap);
     }

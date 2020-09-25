@@ -24,7 +24,7 @@ import static org.springframework.http.MediaType.*;
 @RequestMapping("/jira")
 public class JiraController {
 
-    private IssueService issueService;
+    private final IssueService issueService;
 
     @Autowired
     public JiraController(IssueService issueService) {
@@ -59,7 +59,10 @@ public class JiraController {
         IssueResponse issueResponse = issueService.createIssue(clientIssue);
         log.info("issueResponse={}", issueResponse);
 
-        List<Attachment> attachments = issueService.uploadAttachment(issueResponse.getId(), clientIssue.getBase64FileBody(), clientIssue.getLog());
+        List<Attachment> attachments = issueService.uploadImageAttachment(issueResponse.getId(), clientIssue.getBase64FileBody());
+        log.info("attachResponse={}", attachments);
+
+        attachments = issueService.uploadLogAttachment(issueResponse.getId(), clientIssue.getLog());
         log.info("attachResponse={}", attachments);
 
         return new ResponseEntity<>(issueResponse, HttpStatus.CREATED);
