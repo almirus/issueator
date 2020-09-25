@@ -7,20 +7,27 @@ import {getEnvironment, getErrorMessage} from "../utils/environment";
 import {getVersionFromActuator} from "../utils/getActuator";
 
 export class ButtonWidget {
-    constructor(x = '40px', y = '5px') {
+    constructor(x, y) {
         console.log('call constructor');
+        x = Cookies.get(DOM_ELEMENTS_PREFIX + '_x');
+        y = Cookies.get(DOM_ELEMENTS_PREFIX + '_y');
+        // не выходит ли за пределы экрана
+        if (!x || !y || parseInt(y) > window.innerWidth || parseInt(x) > window.innerHeight) {
+            x = '40px';
+            y = '5px';
+        }
         // плавающая кнопка Создать обращение
         let button_div = document.createElement("span");
-        button_div.style.top = Cookies.get(DOM_ELEMENTS_PREFIX + '_x') || x;
-        button_div.style.left = Cookies.get(DOM_ELEMENTS_PREFIX + '_y') || y;
+        button_div.style.top = x;
+        button_div.style.left = y;
         button_div.setAttribute("id", DOM_ELEMENTS_PREFIX + "submit_error_button");
         button_div.innerHTML = "&#8227; Ошибка <span>Создать обращение в Jira</span>";
         // поле для ввода, пока невидимое
         let textarea_div = document.createElement("span");
         textarea_div.setAttribute("id", DOM_ELEMENTS_PREFIX + "error_message");
         textarea_div.style.visibility = "hidden";
-        textarea_div.style.top = Cookies.get(DOM_ELEMENTS_PREFIX + '_x') || x;
-        textarea_div.style.left = Cookies.get(DOM_ELEMENTS_PREFIX + '_y') || y;
+        textarea_div.style.top = x;
+        textarea_div.style.left = y;
         let text_area = document.createElement("textarea");
         text_area.placeholder = `Подробно опишите Вашу проблему${AUTO_SCREENSHOT_FLAG ? ', к обращению будет автоматически приложен скриншот этой страницы' : ''}`;
         text_area.setAttribute("id", DOM_ELEMENTS_PREFIX + "error_description");
@@ -38,6 +45,9 @@ export class ButtonWidget {
         paint_button.setAttribute('title', 'Нарисовать на скриншоте');
         paint_button.appendChild(document.createTextNode("🎨"));
         textarea_div.appendChild(text_area);
+        submit_button.setAttribute('class', DOM_ELEMENTS_PREFIX + 'button');
+        cancel_button.setAttribute('class', DOM_ELEMENTS_PREFIX + 'button');
+        paint_button.setAttribute('class', DOM_ELEMENTS_PREFIX + 'button');
         buttons_container.appendChild(submit_button);
         buttons_container.appendChild(cancel_button);
         buttons_container.appendChild(paint_button);
@@ -68,6 +78,7 @@ export class ButtonWidget {
             // реальные координаты кнопки начать Рисование, нужны чтобы отобразить там же кнопку завершения
             let rect = paint_button.getBoundingClientRect();
             end_paint_button.setAttribute('style', `left:${rect.left}px;top:${rect.top}px;position:fixed;`);
+            end_paint_button.setAttribute('class', DOM_ELEMENTS_PREFIX + 'button');
             // клик по кнопке Завершить рисование
             end_paint_button.onclick = async () => {
                 console.log('painting end');
@@ -79,6 +90,7 @@ export class ButtonWidget {
             }
             document.body.appendChild(canvas);
             document.body.appendChild(end_paint_button);
+
             let destCtx = canvas.getContext('2d');
             let screen_main_image = new Image;
             screen_main_image.onload = function () {
@@ -89,7 +101,7 @@ export class ButtonWidget {
             if (document.body !== activeFrame.document.body) {
                 let screen_frame_image = new Image;
                 screen_frame_image.onload = function () {
-                    let frame_rect =  activeFrame.document.body.getBoundingClientRect();
+                    let frame_rect = activeFrame.document.body.getBoundingClientRect();
                     // рисуем в наш canvas скриншот - iframe
                     destCtx.drawImage(screen_frame_image, window.innerWidth - frame_rect.width - 16, window.innerHeight - frame_rect.height - 16);
                 };
@@ -129,6 +141,8 @@ export class ButtonWidget {
             text_area.value = "";
         };
         button_div.onclick = () => {
+            textarea_div.style.top = (button_div.offsetTop) + "px";
+            textarea_div.style.left = (button_div.offsetLeft) + "px";
             textarea_div.style.visibility = "visible";
         };
         // клик по кнопке отправки данных
@@ -145,6 +159,14 @@ export class ButtonWidget {
             // отправляем собранную информацию
             this.handleSend().then(result => {
                 console.log('get result', result);
+                let close = document.createElement('span');
+                close.title = "Закрыть";
+                close.className = 'close';
+                close.onclick = () => {
+                    result_area.style.visibility = "hidden";
+                };
+                result_area.appendChild(close);
+
                 result_area.style.visibility = "visible";
                 if (result && result.link) {
                     result_area.appendChild(document.createTextNode("Вы можете отредактировать созданное обращение "));
@@ -157,14 +179,9 @@ export class ButtonWidget {
                 } else {
                     result_area.appendChild(document.createTextNode("Произошла ошибка при создании обращения, подробности в консоли"));
                 }
-                let close = document.createElement('span');
-                close.title = "Закрыть";
-                close.className = 'close';
-                close.onclick = () => {
-                    result_area.style.visibility = "hidden";
-                };
+
                 result_area.setAttribute("id", DOM_ELEMENTS_PREFIX + "result");
-                result_area.appendChild(close);
+
             });
         };
         this._result = result_area;
@@ -176,7 +193,7 @@ export class ButtonWidget {
         document.body.appendChild(this._button);
         document.body.appendChild(this._children);
         document.body.appendChild(this._result);
-        dragElement(this._button, this._children);
+        dragElement(this._button);
         console.log('call render');
     }
 

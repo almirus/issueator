@@ -6,7 +6,6 @@ import {send} from "./utils/sender";
 import {DOM_ELEMENTS_PREFIX} from "./utils/const";
 
 document.addEventListener("DOMContentLoaded", () => {
-
     let widget = new ButtonWidget();
     // основной обработчик
     widget.handleSend = async () => {
